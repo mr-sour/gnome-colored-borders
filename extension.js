@@ -11,6 +11,34 @@ const SHADE_BRIGHTNESS = -0.3;
 
 let on_window_created;
 
+const RedBorderEffect = new Lang.Class({
+     Name: 'RedBorderEffect',
+     Extends: Clutter.Effect,
+ 
+     vfunc_paint: function() {
+         let actor = this.get_actor();
+         actor.continue_paint();
+ 
+         let color = new Cogl.Color();
+         color.init_from_4ub(0xff, 0, 0, 0xc4);
+         Cogl.set_source_color(color);
+ 
+         let geom = actor.get_allocation_geometry();
+         let width = 2;
+ 
+         // clockwise order
+         Cogl.rectangle(0, 0, geom.width, width);
+         Cogl.rectangle(geom.width - width, width,
+                        geom.width, geom.height);
+         Cogl.rectangle(0, geom.height,
+                        geom.width - width, geom.height - width);
+         Cogl.rectangle(0, geom.height - width,
+                        width, width);
+     },
+ });
+
+
+
 const WindowShader = new Lang.Class({
     Name: 'WindowShader',
 
@@ -55,7 +83,7 @@ function enable() {
         if (!use_shader(meta_win)) {
             return;
         }
-        wa._inactive_shader = new WindowShader(wa);
+        wa._inactive_shader = new RedBorderEffect(wa);
         if(!wa._inactive_shader)
             return;
         if (!meta_win.has_focus()) {
