@@ -90,7 +90,7 @@ function enable() {
         type == Meta.WindowType.MODAL_DIALOG);
     }
 
-    function verifyShader(wa) {
+    function verifyBorder(wa) {
         if (wa._inactive_shader)
             return;
         var meta_win = wa.get_meta_window();
@@ -100,18 +100,12 @@ function enable() {
         wa._inactive_shader = new WindowShader(wa);
         if(!wa._inactive_shader)
             return;
-        if (!meta_win.has_focus()) {
-            Tweener.addTween(wa._inactive_shader,
-                             { shadeLevel: 1.0,
-                               time: SHADE_TIME,
-                               transition: 'linear'
-                             });
-        }
+
     }
 
     function focus(the_window) {
         global.get_window_actors().forEach(function(wa) {
-            verifyShader(wa);
+            verifyBorder(wa);
             if (!wa._inactive_shader)
                 return;
             if (the_window == wa.get_meta_window()) {
@@ -142,7 +136,7 @@ function enable() {
         if (!meta_win) {
             return;
         }
-        verifyShader(wa);
+        verifyBorder(wa);
         window_created(null, wa.get_meta_window());
     });
 }
