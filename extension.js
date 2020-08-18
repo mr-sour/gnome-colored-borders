@@ -1,79 +1,93 @@
 /* -*- mode: js2 - indent-tabs-mode: nil - js2-basic-offset: 4 -*- */
-const St = imports.gi.St;
-const Meta = imports.gi.Meta;
 const Lang = imports.lang;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
-const Clutter = imports.gi.Clutter;
+
+const { Clutter, Cogl, Gio, GLib, GObject,
+        Graphene, Meta, Pango, Shell, St } = imports.gi;
 
 const SHADE_TIME = 0.3;
 const SHADE_BRIGHTNESS = -0.3;
 
 let on_window_created;
 
-const RedBorderEffect = new Lang.Class({
-     Name: 'RedBorderEffect',
-     Extends: Clutter.Effect,
- 
-     vfunc_paint: function() {
-         let actor = this.get_actor();
-         actor.continue_paint();
- 
-         let color = new Cogl.Color();
-         color.init_from_4ub(0xff, 0, 0, 0xc4);
-         Cogl.set_source_color(color);
- 
-         let geom = actor.get_allocation_geometry();
-         let width = 2;
- 
-         // clockwise order
-         Cogl.rectangle(0, 0, geom.width, width);
-         Cogl.rectangle(geom.width - width, width,
-                        geom.width, geom.height);
-         Cogl.rectangle(0, geom.height,
-                        geom.width - width, geom.height - width);
-         Cogl.rectangle(0, geom.height - width,
-                        width, width);
-     },
- });
 
+var RedBorderEffect = GObject.registerClass(
+class RedBorderEffect extends Clutter.Effect {
+    _init() {
+        super._init();
+        this._pipeline = null;
+    }
+
+    vfunc_paint(paintContext) {
+        let framebuffer = paintContext.get_framebuffer();
+        let coglContext = framebuffer.get_context();
+        let actor = this.get_actor();
+        actor.continue_paint(paintContext);
+
+        if (!this._pipeline) {
+            let color = new Cogl.Color();
+            color.init_from_4ub(0xff, 0, 0, 0xc4);
+
+            this._pipeline = new Cogl.Pipeline(coglContext);
+            this._pipeline.set_color(color);
+        }
+
+        let alloc = actor.get_allocation_box();
+        let width = 4;
+
+        // clockwise order
+        framebuffer.draw_rectangle(this._pipeline,
+            0, 0, alloc.get_width(), width);
+        framebuffer.draw_rectangle(this._pipeline,
+            alloc.get_width() - width, width,
+            alloc.get_width(), alloc.get_height());
+        framebuffer.draw_rectangle(this._pipeline,
+            0, alloc.get_height(),
+            alloc.get_width() - width, alloc.get_height() - width);
+        framebuffer.draw_rectangle(this._pipeline,
+            0, alloc.get_height() - width,
+            width, width);
+    }
+});
 
 
 const WindowShader = new Lang.Class({
     Name: 'WindowShader',
 
     _init: function(actor) {
-        this._effect = new Clutter.BrightnessContrastEffect();
+        this._effect = new RedBorderEffect();
         actor.add_effect(this._effect);
         this.actor = actor;
         this._enabled = true;
-        this._shadeLevel = 0.0;
-        this._effect.enabled = (this._shadeLevel > 0);
+        //this._shadeLevel = 0.0;
+        //this._effect.enabled = (this._shadeLevel > 0);
     },
 
     set shadeLevel(level) {
         this._shadeLevel = level;
-        this._effect.set_brightness(level * SHADE_BRIGHTNESS);
-        this._effect.enabled = (this._shadeLevel > 0);
+        //this._effect.set_brightness(level * SHADE_BRIGHTNESS);
+        //this._effect.enabled = (this._shadeLevel > 0);
     },
 
     get shadeLevel() {
         return this._shadeLevel;
     }
 });
+
 function init() {
 }
 
 function enable() {
 
     function use_shader(meta_win) {
-	if (!meta_win) {
-	    return false;
-	}
-	var type = meta_win.get_window_type()
-	return (type == Meta.WindowType.NORMAL ||
-		type == Meta.WindowType.DIALOG ||
-		type == Meta.WindowType.MODAL_DIALOG);
+    if (!meta_win) {
+        return false;
+    }
+    var type = meta_win.get_window_type()
+    return (type == Meta.WindowType.NORMAL ||
+        type == Meta.WindowType.DIALOG ||
+        type == Meta.WindowType.MODAL_DIALOG);
     }
 
     function verifyShader(wa) {
@@ -83,7 +97,7 @@ function enable() {
         if (!use_shader(meta_win)) {
             return;
         }
-        wa._inactive_shader = new RedBorderEffect(wa);
+        wa._inactive_shader = new WindowShader(wa);
         if(!wa._inactive_shader)
             return;
         if (!meta_win.has_focus()) {
