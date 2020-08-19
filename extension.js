@@ -33,38 +33,45 @@ class RedBorderEffect extends Clutter.Effect {
         }
 
         let alloc = actor.get_allocation_box();
-        let width = 2;
-        let actparent = actor.get_parent()
+        let borderwidth = 3;
         let mwin = actor.get_meta_window();
         let winrect = mwin.get_frame_rect();
+        //why so much stuff? the actor box is larger then the windowframe
+        //the padding is arbitary depending on the framework. this computes
+        //the difference between the actorbox (used to draw) and the window frame
+        //so we can shift the border peices over
 
-        //this computes the diference between width and height to size the box
+        //diference between width and height
         let dw = alloc.get_width() - winrect.width ;
         let dh = alloc.get_height() - winrect.height ;
-        //this will give the difference between x and y
+        //difference between x and y
         let dy = winrect.y - alloc.y1  ;
         let dx = winrect.x - alloc.x1 ;
-        // clockwise order
+        // top
         framebuffer.draw_rectangle(this._pipeline,
-             dx ,
-             dy , 
-             winrect.width + dx, 
-             (dy)+5);
-        /*
+            dx ,
+            dy , 
+            winrect.width + dx, 
+            (dy)+borderwidth);
+        //right
         framebuffer.draw_rectangle(this._pipeline,
-            alloc.get_width() - width, 
-            width,
-            alloc.get_width(), 
-            alloc.get_height());
-        /*
+            winrect.width + dx, 
+            dy ,
+            winrect.width + dx - borderwidth, 
+            winrect.height + dy);
+        //bottom
         framebuffer.draw_rectangle(this._pipeline,
-            0, alloc.get_height(),
-            alloc.get_width() - width, alloc.get_height() - width);
-
+            dx, 
+            winrect.height + dy,
+            winrect.width + dx, 
+            winrect.height + dy - borderwidth); 
+        //left
         framebuffer.draw_rectangle(this._pipeline,
-            0, alloc.get_height() - width,
-            width, width);
-        */
+            dx, 
+            winrect.height + dy - borderwidth,
+            borderwidth+dx,
+            dy);
+        
     }
 });
 
@@ -76,18 +83,17 @@ const WindowShader = new Lang.Class({
         actor.add_effect(this._effect);
         this.actor = actor;
         this._enabled = true;
-        //this._shadeLevel = 0.0;
-        //this._effect.enabled = (this._shadeLevel > 0);
+        //this._bordercolor = 0.0;
+       
     },
 
-    set shadeLevel(level) {
-        this._shadeLevel = level;
-        //this._effect.set_brightness(level * SHADE_BRIGHTNESS);
-        //this._effect.enabled = (this._shadeLevel > 0);
+    set borderColor(color) {
+        this._bordercolor = color;
+
     },
 
-    get shadeLevel() {
-        return this._shadeLevel;
+    get borderColor() {
+        return this._bordercolor;
     }
 });
 
@@ -96,10 +102,11 @@ function init() {
 
 function enable() {
 
-    function use_shader(meta_win) {
+    function draw_border(meta_win) {
     if (!meta_win) {
         return false;
     }
+
     var type = meta_win.get_window_type()
     return (type == Meta.WindowType.NORMAL ||
         type == Meta.WindowType.DIALOG ||
@@ -107,46 +114,31 @@ function enable() {
     }
 
     function verifyBorder(wa) {
-        if (wa._inactive_shader)
-            return;
+
         var meta_win = wa.get_meta_window();
-        if (!use_shader(meta_win)) {
+        if (!draw_border(meta_win)) {
             return;
         }
-        wa._inactive_shader = new WindowShader(wa);
-        if(!wa._inactive_shader)
-            return;
+        wa = new WindowShader(wa);
+
 
     }
 
-    function focus(the_window) {
+    function windowborder(the_window) {
         global.get_window_actors().forEach(function(wa) {
-
             verifyBorder(wa);
             if (!wa._inactive_shader)
                 return;
-            if (the_window == wa.get_meta_window()) {
-                Tweener.addTween(wa._inactive_shader,
-                                 { shadeLevel: 0.0,
-                                   time: SHADE_TIME,
-                                   transition: 'linear'
-                 });
-            } else if(wa._inactive_shader.shadeLevel == 0.0) {
-                Tweener.addTween(wa._inactive_shader,
-                                 { shadeLevel: 1.0,
-                                   time: SHADE_TIME,
-                                   transition: 'linear'
-                                 });
-            }
         });
     }
 
     function window_created(__unused_display, the_window) {
-        if (use_shader(the_window)) {
-            the_window._shade_on_focus = the_window.connect('focus', focus);
+        if (draw_border(the_window)) {
+            the_window._colorborder = the_window.connect('window-created', windowborder);
         }
     }
-    on_window_created = global.display.connect('window-created', window_created);
+
+    on_window_created = global.display.connect('window-created', windowborder);
 
     global.get_window_actors().forEach(function(wa) {
         var meta_win = wa.get_meta_window();
@@ -164,14 +156,9 @@ function disable() {
     }
     global.get_window_actors().forEach(function(wa) {
         var win = wa.get_meta_window();
-        if (win && win._shade_on_focus) {
-            win.disconnect(win._shade_on_focus);
-            delete win._shade_on_focus;
-        }
-        if(wa._inactive_shader) {
-            wa._inactive_shader.shadeLevel = 0.0;
-            wa.remove_effect(wa._inactive_shader._effect);
-            delete wa._inactive_shader;
+        if (win && win._colorborder) {
+            win.disconnect(win._colorborder);
+            delete win._colorborder;
         }
     });
 }
