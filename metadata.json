@@ -1,7 +1,7 @@
 {
-    "shell-version": ["3.4", "3.6", "3.8", "3.10", "3.12"],
+    "shell-version": ["3.4", "3.6", "3.8", "3.10", "3.12","3.36"],
     "uuid": "colored-border@mr-sour",
     "name": "Gnome Color Border",
-    "description": "Make inactive windows darker",
+    "description": "add colored border to windows",
     "url": "https://github.com/mr-sour/gnome-colored-borders"
 }
