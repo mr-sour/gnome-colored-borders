@@ -24,7 +24,6 @@ class RedBorderEffect extends Clutter.Effect {
         let coglContext = framebuffer.get_context();
         let actor = this.get_actor();
         actor.continue_paint(paintContext);
-
         if (!this._pipeline) {
             let color = new Cogl.Color();
             color.init_from_4ub(0xff, 0, 0, 0xc4);
@@ -122,9 +121,8 @@ function enable() {
 
     function focus(the_window) {
         global.get_window_actors().forEach(function(wa) {
-            var meta_win = wa.get_meta_window();
+
             verifyBorder(wa);
-            
             if (!wa._inactive_shader)
                 return;
             if (the_window == wa.get_meta_window()) {
