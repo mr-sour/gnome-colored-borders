@@ -8,14 +8,14 @@ Eventually this extension will enable qubes os to draw window borders in gnome.
 
 This is undergoing a rework to switch to GTK CSS. drafting notes here to see the best approach to takle this.
 #It starts by making a new provider 
-provider = gtk_css_provider_new ();
+```provider = gtk_css_provider_new ();
 #and then loading in css text into that provider
 gtk_css_provider_load_from_data (provider, text, -1);
 #then I get into the unknowns. The priority and provider I have but the tricky question is about display because we want per window decoration not global
 gtk_style_context_add_provider_for_display (display,GTK_STYLE_PROVIDER (provider),GTK_STYLE_PROVIDER_PRIORITY_USER);
 #heres the display object being passed to the function above. There is the a function to get the default display but this doesn't answer the question of per window decorations this should decorate everything and anything.
 gdk_display_get_default()
-
+```
 
   
 https://developer.gnome.org/gtk4/stable/GtkStyleContext.html#gtk-style-context-add-provider-for-display
