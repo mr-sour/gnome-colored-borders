@@ -20,7 +20,11 @@ gdk_display_get_default()
 
   
 https://developer.gnome.org/gtk4/stable/GtkStyleContext.html#gtk-style-context-add-provider-for-display
+I think theres some kind of GObject editing going on. I'll have to investigate that. 
 
+A last resort option I think doing things proper with adding a provider would be the most Ideal It allow users to set whatever theme and its forced. 
+But there is a dark art. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
+running though each window and setting the theme varriant which can be done in qubes-GUID but I'm going to investigate this after adding the provider. 
 
 
 
