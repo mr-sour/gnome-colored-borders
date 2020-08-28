@@ -7,8 +7,9 @@ Gnome shell extension that adds a colored border
 Eventually this extension will enable qubes os to draw window borders in gnome. 
 
 This is undergoing a rework to switch to GTK CSS. drafting notes here to see the best approach to takle this.
+```
 #It starts by making a new provider 
-```provider = gtk_css_provider_new ();
+provider = gtk_css_provider_new ();
 #and then loading in css text into that provider
 gtk_css_provider_load_from_data (provider, text, -1);
 #then I get into the unknowns. The priority and provider I have but the tricky question is about display because we want per window decoration not global
