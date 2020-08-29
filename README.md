@@ -21,6 +21,7 @@ gdk_display_get_default()
 https://developer.gnome.org/gtk4/stable/GtkStyleContext.html#gtk-style-context-add-provider-for-display
 I think theres some kind of GObject editing going on. When the gtk inscpector is invoked I belive it passes though the GObject representing the window which it then uses the code above to attach styles to which are context bound to the window. What I need to discover is what is that object and how to I iterate though them. From there is a simple matter of attaching my css provder object to it or otherwise invoking it with the proper context to update the providers for that window.
 
+when the inscector is launched i think it has a preloaded GTK_MODULES that contains the rest of code. I think this might be worth investigating as GTK_MODULES are apparently used to make theme engines which is pretty much what im doing.
 
 A last resort option. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
 running though each window and setting the theme varriant which can be done in qubes-GUID but I'm going to investigate this after adding the provider. 
