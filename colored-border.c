@@ -1,7 +1,7 @@
 
 #include <gtk/gtk.h>
 
-static const gchar* STYLE = ".window-frame { box-shadow: none; margin: 0 } .titlebar { border-radius: 0 }";
+static const gchar* STYLE = "decoration { border: 4px solid gray; background: gray; } .window-frame { box-shadow: none; margin: 0; } .titlebar { border-radius: 0; }";
 
 void
 gtk_module_init(gint *argc, gchar ***argv[])
