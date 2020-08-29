@@ -17,13 +17,12 @@ gtk_style_context_add_provider_for_display (display,GTK_STYLE_PROVIDER (provider
 #heres the display object being passed to the function above. There is the a function to get the default display but this doesn't answer the question of per window decorations this should decorate everything and anything.
 gdk_display_get_default()
 ```
-
   
 https://developer.gnome.org/gtk4/stable/GtkStyleContext.html#gtk-style-context-add-provider-for-display
-I think theres some kind of GObject editing going on. I'll have to investigate that. 
+I think theres some kind of GObject editing going on. When the gtk inscpector is invoked I belive it passes though the GObject representing the window which it then uses the code above to attach styles to which are context bound to the window. What I need to discover is what is that object and how to I iterate though them. From there is a simple matter of attaching my css provder object to it or otherwise invoking it with the proper context to update the providers for that window.
 
-A last resort option I think doing things proper with adding a provider would be the most Ideal It allow users to set whatever theme and its forced. 
-But there is a dark art. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
+
+A last resort option. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
 running though each window and setting the theme varriant which can be done in qubes-GUID but I'm going to investigate this after adding the provider. 
 
 
