@@ -6,26 +6,19 @@ Gnome shell extension that adds a colored border
 
 Eventually this extension will enable qubes os to draw window borders in gnome. 
 
-This is undergoing a rework to switch to GTK CSS. drafting notes here to see the best approach to takle this.
-```
-#It starts by making a new provider 
-provider = gtk_css_provider_new ();
-#and then loading in css text into that provider
-gtk_css_provider_load_from_data (provider, text, -1);
-#then I get into the unknowns. The priority and provider I have but the tricky question is about display because we want per window decoration not global
-gtk_style_context_add_provider_for_display (display,GTK_STYLE_PROVIDER (provider),GTK_STYLE_PROVIDER_PRIORITY_USER);
-#heres the display object being passed to the function above. There is the a function to get the default display but this doesn't answer the question of per window decorations this should decorate everything and anything.
-gdk_display_get_default()
-```
+This is undergoing a rework to switch to GTK CSS. drafting notes here to see the best approach.
+
   
 https://developer.gnome.org/gtk4/stable/GtkStyleContext.html#gtk-style-context-add-provider-for-display
-I think theres some kind of GObject editing going on. When the gtk inscpector is invoked I belive it passes though the GObject representing the window which it then uses the code above to attach styles to which are context bound to the window. What I need to discover is what is that object and how to I iterate though them. From there is a simple matter of attaching my css provder object to it or otherwise invoking it with the proper context to update the providers for that window.
 
-when the inscector is launched i think it has a preloaded GTK_MODULES that contains the rest of code. I think this might be worth investigating as GTK_MODULES are apparently used to make theme engines which is pretty much what im doing.
-Now I'm on the right track. Heres a fairly modern use of a GTK module in action. After creating a module and launching the application I belive that sets all the context needed for my to all important provider code. From within the module I can hopfully get the right info and get the window property info with a GTK,GDK call but if not I can match it some other way.
+
 https://github.com/p-e-w/plotinus/blob/master/src/Module.vala
 
 export GTK_MODULES=$GTK_MODULES:<path/to/module.so>
+
+it looks like I might need to switch to vala. Its certainly possible to interact with these GObjects in C but its becoming painful and vala seems todo what I need. I can use the method signature from gnome-globalmenu and that should allow me to create the module in vala. Hopfully then my lists return usful gtkwindow objects which I need in order to apply per window style providers
+https://valadoc.org/gtk+-3.0/Gtk.Window.list_toplevels.html
+
 
 
 A last resort option. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
