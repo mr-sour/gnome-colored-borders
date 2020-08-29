@@ -3,7 +3,7 @@
 
 namespace Border {
 
-  const uint SCAN_INTERVAL = 100;
+  const uint SCAN_INTERVAL = 1000;
 
   // Method signature adapted from https://github.com/gnome-globalmenu/gnome-globalmenu
   [CCode(cname="gtk_module_init")]
@@ -26,6 +26,10 @@ namespace Border {
       //!(window is PopupWindow) && 
       if (window != null){
         window.resize(100,100);
+        //TODO
+        //https://valadoc.org/gdk-x11-3.0/Gdk.X11Window.get_xid.html
+        //get the xid of the window use the xid to get props (probally gonna need another library)
+        //use the props to set the css provider data.
         css_provider.load_from_data("decoration { border: 4px solid red; background: gray; }");
         Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
