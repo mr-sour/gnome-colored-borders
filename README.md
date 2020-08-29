@@ -20,6 +20,17 @@ it looks like I might need to switch to vala. Its certainly possible to interact
 https://valadoc.org/gtk+-3.0/Gtk.Window.list_toplevels.html
 
 
+```
+sudo dnf install git cmake vala gtk3-devel
+```
+
+```
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
 
 A last resort option. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
 running though each window and setting the theme varriant which can be done in qubes-GUID but I'm going to investigate this after adding the provider. 
