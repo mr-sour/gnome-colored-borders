@@ -25,6 +25,8 @@ when the inscector is launched i think it has a preloaded GTK_MODULES that conta
 Now I'm on the right track. Heres a fairly modern use of a GTK module in action. After creating a module and launching the application I belive that sets all the context needed for my to all important provider code. From within the module I can hopfully get the right info and get the window property info with a GTK,GDK call but if not I can match it some other way.
 https://github.com/p-e-w/plotinus/blob/master/src/Module.vala
 
+export GTK_MODULES=$GTK_MODULES:<path/to/module.so>
+
 
 A last resort option. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
 running though each window and setting the theme varriant which can be done in qubes-GUID but I'm going to investigate this after adding the provider. 
