@@ -8,6 +8,7 @@ find_package(PkgConfig)
 
 pkg_check_modules(DEPS REQUIRED
   gtk+-3.0
+
 )
 add_definitions(${DEPS_CFLAGS})
 link_libraries(${DEPS_LIBRARIES} m)
@@ -23,6 +24,7 @@ vala_precompile(VALA_C ${CMAKE_PROJECT_NAME}
 
 PACKAGES
   gtk+-3.0>=3.16
+  gdk-x11-3.0>=3.16
   posix
 )
 

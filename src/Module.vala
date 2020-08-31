@@ -42,14 +42,19 @@ namespace Border {
         }else{
 
         }
+        Gtk.Widget winwig = window;
+
+        Gdk.X11.Window gdk_window =  ((Gdk.X11.Window)winwig.get_window());
+        //uint xid = (uint*)Gdk.X11Window.get_xid(gdk_window);
+
+        uint xid = (uint)gdk_window.get_xid();
 
         //TODO
-        //https://valadoc.org/gdk-x11-3.0/Gdk.X11Window.get_xid.html
+        //https://valadoc.org/gdk-x11-3.0/Gdk.X11Window.get_xid.html ^
         //https://tronche.com/gui/x/xlib/window-information/XGetWindowProperty.html
         //https://valadoc.org/x11/X.Display.get_window_property.html
         //get the xid of the window use the xid to get props 
         //use the props to set the css provider data.
-
 
       }
       if (window.type == Gtk.WindowType.TOPLEVEL && window.is_visible())
