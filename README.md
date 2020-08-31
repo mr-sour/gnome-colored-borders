@@ -14,10 +14,10 @@ https://developer.gnome.org/gtk4/stable/GtkStyleContext.html#gtk-style-context-a
 
 https://github.com/p-e-w/plotinus/blob/master/src/Module.vala
 
+launch apps in terminal
 export GTK_MODULES=$GTK_MODULES:<path/to/module.so>
 
-it looks like I might need to switch to vala. Its certainly possible to interact with these GObjects in C but its becoming painful and vala seems todo what I need. I can use the method signature from gnome-globalmenu and that should allow me to create the module in vala. Hopfully then my lists return usful gtkwindow objects which I need in order to apply per window style providers
-https://valadoc.org/gtk+-3.0/Gtk.Window.list_toplevels.html
+To install add it to `/ect/environment`
 
 
 ```
@@ -32,6 +32,19 @@ make
 sudo make install
 ```
 
+Other gnomey stuff to look into
+I think its going to be nessisary to ship a applet extension so users can mount drives use wifi ect...
+
+https://github.com/ubuntu/gnome-shell-extension-appindicator
+
+A nice looking wifi applet from elementry OS called nm-applet integrates very cleanly.
+I assume other things from elementry will also look if needed. The other option is to create an extension that loads that stuff into the native gnome menu but thats gonna suck expecially when it comes to drawing borders and showing VM seperation.
+nm-applet
+
+
+
+
+I dont think this bit below is going to be needed I got the provders loading correctly as far as I can tell so things would have to go really south for this to be needed.
 A last resort option. GTK supports theme variants which can easilly be set though XPROP I could make variants of everything then its just a matter of 
 running though each window and setting the theme varriant which can be done in qubes-GUID but I'm going to investigate this after adding the provider. 
 

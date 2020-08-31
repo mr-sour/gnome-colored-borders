@@ -16,22 +16,40 @@ namespace Border {
       Gtk.CssProvider css_provider = new Gtk.CssProvider ();
       //Took this from Plotinus need to figure out if this needs to run in a loop like this
       //until then maybe don use new anywhere :D
+  		// css_provider.load_from_data("decoration { border: 3px solid blue; background: gray; } .titlebar { background: blue ; color:white; } .titlebar:backdrop  {background: #777777; color:white;} window.ssd headerbar.titlebar { border: 5px; box-shadow: none; background-image: linear-gradient(to bottom, shade(green, 1.05), shade(@theme_bg_color, 1.00)); }");
+        // Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, uint.MAX);
       Timeout.add(SCAN_INTERVAL, () => {
       var application = Application.get_default() as Gtk.Application;
       if (application != null) {
 
       }
-
+      
+      //Gtk.StyleContext.remove_provider_for_screen (Gdk.Screen.get_default (), css_provider);
       Gtk.Window.list_toplevels().foreach((window) => {
-      //!(window is PopupWindow) && 
+
       if (window != null){
-        window.resize(100,100);
+        if(window.has_toplevel_focus){
+        	//titlebar doesn't seem todo the trick but window.ssd does
+          Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, uint.MAX);          
+          css_provider.load_from_data("
+          	decoration { border: 3px solid blue; background: gray; } 
+          	.titlebar { background: blue ; color:white; } 
+          	.titlebar:backdrop  {background: #777777; color:white;} 
+          	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;
+          	background-image: linear-gradient(to bottom, shade(green, 1.05), 
+          	shade(@theme_bg_color, 1.00)); }");
+          
+        }else{
+
+        }
+
         //TODO
         //https://valadoc.org/gdk-x11-3.0/Gdk.X11Window.get_xid.html
-        //get the xid of the window use the xid to get props (probally gonna need another library)
+        //https://tronche.com/gui/x/xlib/window-information/XGetWindowProperty.html
+        //https://valadoc.org/x11/X.Display.get_window_property.html
+        //get the xid of the window use the xid to get props 
         //use the props to set the css provider data.
-        css_provider.load_from_data("decoration { border: 4px solid red; background: gray; }");
-        Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+
 
       }
       if (window.type == Gtk.WindowType.TOPLEVEL && window.is_visible())
