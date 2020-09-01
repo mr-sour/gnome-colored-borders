@@ -50,11 +50,13 @@ namespace Border {
         Gdk.X11.Window gdk_window =  ((Gdk.X11.Window)winwig.get_window());
         //uint xid = (uint*)Gdk.X11Window.get_xid(gdk_window);
         gdk_window.set_theme_variant("SEEMEEEE");
-        //X.Window xid = Gdk.X11.get_default_root_xwindow(); 
+        X.Window xid = gdk_window.get_xid(); 
+        uint xidint = (uint)xid;
+        //Hey got the xid without a segfault :party:
+        print(xidint.to_string());
        }
 
 
-         //print (xid);
         //TODO
         //https://valadoc.org/gdk-x11-3.0/Gdk.X11Window.get_xid.html ^
         //https://tronche.com/gui/x/xlib/window-information/XGetWindowProperty.html
