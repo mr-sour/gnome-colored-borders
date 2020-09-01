@@ -42,13 +42,19 @@ namespace Border {
         }else{
 
         }
-        Gtk.Widget winwig = window;
+        Gtk.Widget winwig = ((Gtk.Widget)window);
+        //Gdk.Window gdk_window =  Gdk.Window.get_toplevel();
 
+        //check to make sure its real
+        if(winwig.get_window()!=null){
         Gdk.X11.Window gdk_window =  ((Gdk.X11.Window)winwig.get_window());
         //uint xid = (uint*)Gdk.X11Window.get_xid(gdk_window);
+        gdk_window.set_theme_variant("SEEMEEEE");
+        //X.Window xid = Gdk.X11.get_default_root_xwindow(); 
+       }
 
-        uint xid = (uint)gdk_window.get_xid();
 
+         //print (xid);
         //TODO
         //https://valadoc.org/gdk-x11-3.0/Gdk.X11Window.get_xid.html ^
         //https://tronche.com/gui/x/xlib/window-information/XGetWindowProperty.html
