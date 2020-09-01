@@ -112,6 +112,49 @@ namespace Border {
 
       */
   }
+
+
+/**
+ * Retrieve window property of type window.
+ *
+ * @param window      target window or ``null`` to use the default root window
+ * @param property    name of the requested property
+ * @return            the value of property as {@link Gdk.X11.Window} on success,
+ *                    null on failure such as invalid ``window``, non-existent ``property``
+ *                    or different property type than {@link X.XA_WINDOW}.
+ */
+public Gdk.X11.Window? get_window_property_as_win(Gdk.Window? window, string property) {
+    Gdk.X11.Window? win, result = null;
+    if (window != null) {
+        win = window as Gdk.X11.Window;
+    } else {
+        win = Gdk.get_default_root_window() as Gdk.X11.Window;
+    }
+    var display = win.get_display() as Gdk.X11.Display;
+
+    X.Atom type;
+    int format;
+    ulong n_items;
+    ulong bytes_after;
+    void* data;
+
+    display.error_trap_push();
+    display.get_xdisplay().get_window_property(
+        win.get_xid(), Gdk.X11.get_xatom_by_name_for_display(display, property),
+        0, long.MAX, false, X.XA_WINDOW, out type, out format, out n_items, out bytes_after, out data);
+    display.error_trap_pop_ignored();
+
+    if (type == X.XA_WINDOW) {
+        X.Window xwin = *(X.Window *) data;
+        result = new Gdk.X11.Window.foreign_for_display(display, xwin);
+    }
+
+    if (data != null) {
+        X.free(data);
+    }
+    return result;
+}
+
 /*
   string? get_window_title(Gtk.Window window) {
     var titlebar = window.get_titlebar();
