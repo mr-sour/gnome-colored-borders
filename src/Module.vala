@@ -3,7 +3,7 @@
 
 namespace Border {
 
-  const uint SCAN_INTERVAL = 1000;
+  const uint REFRESH_INTERVAL = 1000;
 
   // Method signature adapted from https://github.com/gnome-globalmenu/gnome-globalmenu
   [CCode(cname="gtk_module_init")]
@@ -15,7 +15,7 @@ namespace Border {
       //css_provider.load_from_path ("style.css");
       Gtk.CssProvider css_provider = new Gtk.CssProvider ();
 
-      Timeout.add(SCAN_INTERVAL, () => {
+      Timeout.add(REFRESH_INTERVAL, () => {
       var application = Application.get_default() as Gtk.Application;
       if (application != null) {
 
@@ -25,30 +25,31 @@ namespace Border {
       Gtk.Window.list_toplevels().foreach((window) => {
 
       if (window != null){
-        if(window.has_toplevel_focus){
-        	//titlebar doesn't seem todo the trick but window.ssd does
-          Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, uint.MAX);          
-          css_provider.load_from_data("
-          	decoration { border: 3px solid blue; background: gray; } 
-          	.titlebar { background: blue ; color:white; } 
-          	.titlebar:backdrop  {background: #777777; color:white;} 
-          	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;
-          	background-image: linear-gradient(to bottom, shade(green, 1.05), 
-          	shade(@theme_bg_color, 1.00)); }");
-          
-        }else{
 
-        }
         Gtk.Widget winwig = ((Gtk.Widget)window);
 
         //check to make sure its real
         if(winwig.get_window()!=null){
         Gdk.X11.Window gdk_window =  ((Gdk.X11.Window)winwig.get_window());
         string objpath = get_gdk_window_property  (gdk_window,"_GTK_APPLICATION_OBJECT_PATH");
-        gdk_window.set_theme_variant("SEEMEEEE");
-        X.Window xid = gdk_window.get_xid(); 
-        uint xidint = (uint)xid;
+        //gdk_window.set_theme_variant("SEEMEEEE");
 
+        //X.Window xid = gdk_window.get_xid(); 
+        //uint xidint = (uint)xid;
+
+        //gotta switch over to qubes to finish the color theming should be able to take the 
+        //color property and pass it right into this CSS
+        string color = "green";
+        	//titlebar doesn't seem todo the trick but window.ssd does
+        Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, uint.MAX);          
+        css_provider.load_from_data(@"
+          	decoration { border: 3px solid $color; background: gray; } 
+          	.titlebar { background: blue ; color:white; } 
+          	.titlebar:backdrop  {background: #777777; color:white;} 
+          	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;
+          	background-image: linear-gradient(to bottom, shade(green, 1.05), 
+          	shade(@theme_bg_color, 1.00)); }");
+          
        }
 
 
@@ -59,8 +60,6 @@ namespace Border {
       }
 
       });
-
-
       return true;
 
       });
