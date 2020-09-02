@@ -50,11 +50,11 @@ namespace Border {
         Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, uint.MAX);          
         css_provider.load_from_data(@"
           	decoration { border: 3px solid #$color; background: gray; } 
-          	.titlebar { background: blue ; color:white; } 
-          	.titlebar:backdrop  {background: #777777; color:white;} 
+          	.titlebar { background: #$color ; color:white; } 
+          	.titlebar:backdrop  {background: #$color; color:white;} 
           	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;
-          	background-image: linear-gradient(to bottom, shade(green, 1.05), 
-          	shade(@theme_bg_color, 1.00)); }");
+          	background-image: linear-gradient(to bottom, shade(#$color, 1.05), 
+          	shade(#$color, 1.00)); }");
           
        }
 
