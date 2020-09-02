@@ -39,11 +39,17 @@ namespace Border {
 
         //gotta switch over to qubes to finish the color theming should be able to take the 
         //color property and pass it right into this CSS
-        string color = "green";
+
+        //what a colorcode looks like from win prop
+        int colornum = 15586304;
+        //format to hex
+        string color = "%X\n".printf(colornum);
+        //debug
+        //print(color);
         	//titlebar doesn't seem todo the trick but window.ssd does
         Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), css_provider, uint.MAX);          
         css_provider.load_from_data(@"
-          	decoration { border: 3px solid $color; background: gray; } 
+          	decoration { border: 3px solid #$color; background: gray; } 
           	.titlebar { background: blue ; color:white; } 
           	.titlebar:backdrop  {background: #777777; color:white;} 
           	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;
