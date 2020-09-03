@@ -38,10 +38,11 @@ namespace Border {
          
         Gdk.Screen.get_default().get_toplevel_windows().foreach((dwindow) => {
         //unlike gtk.window toplevels this seems to be listing theparent window xid I'm after
+        //it looks like Screen.get_default scopes it a window so this isn't iterating globally
         Gdk.X11.Window gdwindow = (Gdk.X11.Window)dwindow;
         uint xidint = (uint)gdwindow.get_xid();
         //print();
-	//https://valadoc.org/x11/X.Display.query_tree.html I think after my inital list I need to go into the children to get another set of xid's to look for the property on
+	//https://valadoc.org/x11/X.Display.query_tree.html I think after going though the toplevel windows I need to go into the children to get another set of xid's which should contain the property which I can then boil back up to gdk.Screen. "lol X11+gdk+gtk is super fun with this odd usecase"
         string xstring = "%X\n".printf(int.parse(xidint.to_string()));
         //janky logging not sure where else to put it after its loaded globally
         Process.spawn_command_line_sync (@"touch /home/test/Documents/$xstring");
