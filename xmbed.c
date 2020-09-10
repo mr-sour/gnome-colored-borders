@@ -33,14 +33,14 @@ gint main(gint argc, gchar **argv)
     //swap titlebar for headerbar to set CSD
 	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
     gtk_header_bar_set_has_subtitle (GTK_HEADER_BAR (header), FALSE);
-    gtk_header_bar_set_title (GTK_HEADER_BAR (header), "GVIM now with CSD");
+    gtk_header_bar_set_title (GTK_HEADER_BAR (header), "GVIM embedded in a window with CSD");
 	gtk_window_set_titlebar (GTK_WINDOW (win), header);
 	//connect socket
 	g_signal_connect(sock, "plug-removed", gtk_main_quit, NULL);
 	g_signal_connect(win,  "delete-event", gtk_main_quit, NULL);
 	
 	//Set default start size a little bigger. 
-	gtk_widget_set_size_request(sock, 400, 400);
+	gtk_widget_set_size_request(sock, 400, 200);
 	//gtk_box_pack_start(GTK_BOX(vbox), sock, TRUE,  TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(win), sock);
 	//realize gtk window (required before embedding another window)
@@ -68,7 +68,7 @@ gint main(gint argc, gchar **argv)
 
 	gtk_socket_add_id(GTK_SOCKET(sock),w);
     
-    // Adding a gtk window to the X11 window because I want to interact with a button
+    // Adding a gtk window to the X11 window because I want to ineract with somthing 
     GdkWindow* gw = gdk_x11_window_foreign_new_for_display(gd, w);
     GtkWidget* gtk = gtk_widget_new(GTK_TYPE_WINDOW, NULL);
     g_signal_connect(gtk, "realize", G_CALLBACK(my_gtk_realize), gw);
@@ -87,6 +87,10 @@ gint main(gint argc, gchar **argv)
     gtk_box_pack_start(GTK_BOX(box), menubar, FALSE, FALSE, 3);
     gtk_container_add(GTK_CONTAINER(gtk), box);
     gtk_widget_show_all(gtk);
+
+
+
+
 
 	/* Run */
 	gtk_main();
