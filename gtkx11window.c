@@ -1,5 +1,5 @@
 
-// gcc test.c `pkg-config --cflags --libs gtk+-3.0 gdk-3.0` -lX11 && ./a.out
+// gcc -o simple ./gtkx11window.c `pkg-config --libs --cflags gdk-3.0 gtk+-3.0` -lX11   
 
 #include <X11/Xlib.h>
 #include <unistd.h>
@@ -24,6 +24,9 @@ int main(int argc, char** argv)
 {
     gtk_init(&argc, &argv);
 
+    GtkWidget *header;
+    GtkWidget *window;
+
     GdkDisplay* gd = gdk_display_get_default();
     Display* d = GDK_DISPLAY_XDISPLAY(gd);
 
@@ -31,28 +34,30 @@ int main(int argc, char** argv)
     XMapRaised(d, w);
 
     GdkWindow* gw = gdk_x11_window_foreign_new_for_display(gd, w);
+    
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+     g_signal_connect(window, "destroy",
+       G_CALLBACK(gtk_main_quit), NULL); 
 
-    GtkWidget* gtk = gtk_widget_new(GTK_TYPE_WINDOW, NULL);
-    g_signal_connect(gtk, "realize", G_CALLBACK(my_gtk_realize), gw);
-    gtk_widget_set_has_window(gtk, TRUE);
-    gtk_widget_realize(gtk);
+    if (w != 0) {
 
-    GtkWidget* menubar = gtk_menu_bar_new();
-    GtkWidget* file = gtk_menu_item_new_with_label("File");
-    GtkWidget* filemenu = gtk_menu_new();
-    GtkWidget* quit = gtk_menu_item_new_with_label("Quit");
-    gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), quit);
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file), filemenu);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file);
+        window_container = gdk_window_foreign_new(w);
+        if (GTK_WIDGET_MAPPED(window))
+            gtk_widget_unmap(window);
 
-    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    gtk_box_pack_start(GTK_BOX(box), menubar, FALSE, FALSE, 3);
-    gtk_container_add(GTK_CONTAINER(gtk), box);
+        gdk_window_reparent(window->window, window_container, 0, 0);
 
+    }
+    //GtkWidget* gtk = gtk_widget_new(GTK_TYPE_WINDOW, NULL);
+    
+    //g_signal_connect(gtk, "realize", G_CALLBACK(my_gtk_realize), gw);
+    //gtk_widget_set_has_window(gtk, TRUE);
+    //gtk_widget_realize(gtk);
+    
+   //widgets were here
     gboolean running = TRUE;
-    g_signal_connect(G_OBJECT(quit), "activate", G_CALLBACK(file_quit), &running);
 
-    gtk_widget_show_all(gtk);
+    //gtk_widget_show_all(gtk);
 
     GC gc = XCreateGC(d, w, 0, 0);
     XColor red;
