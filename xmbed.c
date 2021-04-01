@@ -1,11 +1,12 @@
-#include <gtk/gtk.h>
-#include <X11/Xlib.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <X11/Xlib.h>
+#include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtkx.h>
-
+//why is this called xmbed.c? because gtk socket plug support uses xmbed under the hood
 //gcc -o simple ./xmbed.c `pkg-config --libs --cflags gdk-3.0 gtk+-3.0` -lX11
+//pretty roundabout searches, but I got somthing to work with
 //https://stackoverflow.com/questions/38798252/whats-the-counterpart-of-qx11embedwidget-in-qt5
 //https://developer.gnome.org/gtk3/stable/GtkSocket.html
 
@@ -30,7 +31,7 @@ static void x11_win_reparent_to_gtk_csd(Window w)
 	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
 	//subtitles? this show is already in my language
     gtk_header_bar_set_has_subtitle (GTK_HEADER_BAR (header), FALSE);
-    //this would get set to "VMNAME - APPLICTION NAME" in the real app
+    //this would get set to "VMNAME - APPNAME" in the real app
     gtk_header_bar_set_title (GTK_HEADER_BAR (header), "x11 window embedded in a window with CSD");
 	//swap default titlebar for headerbar to set CSD
 	gtk_window_set_titlebar (GTK_WINDOW (win), header);
