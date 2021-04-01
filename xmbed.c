@@ -36,7 +36,9 @@ static void x11_win_reparent_to_gtk_csd(Window w)
 	gtk_window_set_titlebar (GTK_WINDOW (win), header);
 	
 	//connect sockets
+	//this is if the underlying window has been delete "ie: cancel dialog"
 	g_signal_connect(sock, "plug-removed", gtk_main_quit, NULL);
+    //this is for when you press the little X or ctrl+c out of program
 	g_signal_connect(win,  "delete-event", gtk_main_quit, NULL);
 
 	//Set default start size a little bigger.IDK might need todo some weirdness in the real but this is fine for demo 
