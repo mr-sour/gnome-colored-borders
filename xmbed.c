@@ -54,9 +54,9 @@ static void x11_win_reparent_to_gtk_csd(Window w)
 	gtk_widget_show(sock);
 	gtk_widget_realize( sock );
 	gtk_widget_show_all(win);
-    // embed x11 window into a GtkSocket
-    gtk_socket_add_id(GTK_SOCKET(sock),w);
-    //Call main cause it was in the example
+        // embed x11 window into a GtkSocket
+        gtk_socket_add_id(GTK_SOCKET(sock),w);
+        //Call main cause it was in the example
 	gtk_main();
 
 }
@@ -72,7 +72,7 @@ gint main(gint argc, gchar **argv)
 
     //get a display
     Display* d = GDK_DISPLAY_XDISPLAY(gd);
-    //the simplest black window you ever saw
+    //the simplest black window you ever saw, I did add objects to make sure stuff renders but I removed because thats not how the real deal will work.
     Window w = XCreateSimpleWindow(d, DefaultRootWindow(d), 0, 0, 300, 300, 0, 0, 0);
     //magic reparenting function 
     x11_win_reparent_to_gtk_csd(w);
