@@ -1,16 +1,13 @@
-#include <stdio.h>
-#include <unistd.h>
 #include <X11/Xlib.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include <gtk/gtkx.h>
 //why is this called xmbed.c? because gtk socket plug support uses xmbed under the hood
-//gcc -o simple ./xmbed.c `pkg-config --libs --cflags gdk-3.0 gtk+-3.0` -lX11
-//pretty roundabout searches, but I got somthing to work with
+//gcc -o xmbed ./xmbed.c `pkg-config --libs --cflags gdk-3.0 gtk+-3.0` -lX11
+//pretty roundabout searches, but somthing to work with
 //https://stackoverflow.com/questions/38798252/whats-the-counterpart-of-qx11embedwidget-in-qt5
 //https://developer.gnome.org/gtk3/stable/GtkSocket.html
 
-static void x11_win_reparent_to_gtk_csd(Window w)
+static void x11_win_reparent_to_gtk_csd(Window *w)
 {
 
 	/* Create window Objects*/
@@ -26,7 +23,7 @@ static void x11_win_reparent_to_gtk_csd(Window w)
 	gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER(provider), 65535);
     //Simple little decoration to add to the window
     gtk_css_provider_load_from_data (
-        provider, " decoration { border: 3px solid green; background: gray; }           	.titlebar { background: green ; color:white; }           	.titlebar:backdrop  {background: green; color:white;}           	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;          	background-image: linear-gradient(to bottom, shade(blue, 1.05),           	shade(blue, 1.00)); }", -1, NULL);
+     provider, "decoration { border: 3px solid green; background: gray; } .titlebar { background: green ; color:white; }           	.titlebar:backdrop  {background: green; color:white;}           	window.ssd headerbar.titlebar { border: 5px; box-shadow: none;          	background-image: linear-gradient(to bottom, shade(blue, 1.05),           	shade(blue, 1.00)); }", -1, NULL);
     //I like windows that close
 	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
 	//subtitles? this show is already in my language
@@ -51,32 +48,41 @@ static void x11_win_reparent_to_gtk_csd(Window w)
 	gtk_container_add(GTK_CONTAINER(win), sock);
 	
 	//realize gtk window (required before embedding another window)
-	gtk_widget_show(sock);
-	gtk_widget_realize( sock );
+
+	//gtk_widget_show(sock);
+	//gtk_widget_realize( sock );
+	
 	gtk_widget_show_all(win);
     // embed x11 window into a GtkSocket
-    gtk_socket_add_id(GTK_SOCKET(sock),w);
+    gtk_socket_add_id(GTK_SOCKET(sock),*w);
     //Call main cause it was in the example
-	gtk_main();
+	//gtk_main();
+	//gtk_main_iteration();
+	while(1){
+		//non blocking gtk_main in a blocking loop :D
+			gtk_main_iteration_do (FALSE);
 
+		}
 }
 
 
 gint main(gint argc, gchar **argv)
 {
+    Window child_win;
 
-    // the only reason this is here and not in the reparenting functin is that I need the display
+    // the only reason gtkinit is here and not in the reparenting functin is that I need the display
     //in the real app thats pulled from some x11 voodoo struct
 	gtk_init(NULL, NULL);
 	GdkDisplay* gd = gdk_display_get_default();
-
     //get a display
     Display* d = GDK_DISPLAY_XDISPLAY(gd);
     //the simplest black window you ever saw
-    Window w = XCreateSimpleWindow(d, DefaultRootWindow(d), 0, 0, 300, 300, 0, 0, 0);
+    child_win = XCreateSimpleWindow(d, DefaultRootWindow(d), 0, 0, 300, 300, 0, 0, 0);
     //magic reparenting function 
-    x11_win_reparent_to_gtk_csd(w);
-
+    x11_win_reparent_to_gtk_csd(&child_win);
 	/* Run */
+    printf("%#08x\n", 1);
+
+
 	return 0;
 }
